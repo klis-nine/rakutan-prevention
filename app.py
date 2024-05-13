@@ -8,3 +8,6 @@ def return_top():
 @app.route("/user/settings")
 def return_user_settings():
     return "<p>Hello, World! ユーザー設定ページです</p>"
+
+if __name__ == "__main__":
+    app.run()
