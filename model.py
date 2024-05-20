@@ -7,9 +7,9 @@ from sqlalchemy import (
     ForeignKey,
     MetaData,
     select,
+    update
 )
 from sqlalchemy.orm import sessionmaker
-
 
 class DatabaseManager:
     def __init__(self, database_url="sqlite:///main.db"):
@@ -61,9 +61,43 @@ class DatabaseManager:
             query = select(self.accounts)
             result = session.execute(query).fetchall()
             return result
+    
+    def get_absences(self,user_id, class_id):
+        with self.get_session() as session:   
+            query = select([self.class_registration.c.absences]).where(
+            (self.class_registration.c.user_id == user_id) &
+            (self.class_registration.c.class_id == class_id)
+            )
+            result = session.execute(query).fetchone()
+            if result:
+                 return result["absences"]
+            else:
+                 return None
+    
+    def change_absences(self, user_id, class_id, absences_count):
+        with self.get_session() as session:  
+            query = select([self.class_registration]).where(
+                    (self.class_registration.c.user_id == user_id) &
+                    (self.class_registration.c.class_id == class_id)
+                )
+            result = session.execute(query).fetchone()
 
+            if result:
+                stmt = update(self.class_registration).where(
+                  (self.class_registration.c.user_id == user_id) &
+                  (self.class_registration.c.class_id == class_id)
+                ).values(absences=absences_count)
+                session.execute(stmt)
+                session.commit()
+                return f"Absences for user_id {user_id} in class_id {class_id} updated to {absences_count}."
+            else:
+                return f"No registration found for user_id {user_id} in class_id {class_id}."
 
-# 例えば:
-# db_manager = DatabaseManager()
-# db_manager.create_tables()
-# accounts = db_manager.select_all_accounts()
+    def add_absences(self, user_id, class_id):
+        with self.get_session() as session:  
+            current_absences = self.get_absences(user_id, class_id)
+            if current_absences is not None:
+                new_absences_count = current_absences + 1
+                return self.change_absences(user_id, class_id, new_absences_count)
+            else:
+                return f"No registration found for user_id {user_id} in class_id {class_id}."
