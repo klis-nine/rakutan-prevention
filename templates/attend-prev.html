@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+	<meta charset="UTF-8">
+	<title>落単回避アプリ</title>
+	<link rel="stylesheet" href="situation-style.css">
+</head>
+
+<body>
+    <header>
+        <img src="icon.png">
+		<h2 class="title">落単回避！</h2>
+    </header>
+    
+    <center><h1>履修状況登録</h1></center>
+    <center>
+        <form action="#" method="post">
+            科目番号、科目名などで検索
+            <input type="text" name="keyword" value="" size="15" />
+            <input type="hidden" name="bid" value="%{BID}" />
+            <input type="submit" name="ACMS_POST_2GET" value="検索" />
+        </form>
+    </center>
+    
+    <table>
+        <tr>
+            <td><button type="button">春A</button></td>
+            <td><button type="button">春B</button></td>
+            <td><button type="button">春C</button></td>
+            <td><button type="button">秋A</button></td>
+            <td><button type="button">秋B</button></td>
+            <td><button type="button">秋C</button></td>
+        </tr>
+    </table>
+
+    <table>
+        <tr>
+            <th>科目番号</th>
+            <th>曜日時限</th>
+            <th>科目名</th>
+            <th>出席回数</th>
+            <th>出欠席確認</th>
+        </tr>
+        <tr>
+            <th>GExxxxx</th>
+            <th>月56</th>
+            <th>ABC概論</th>
+            <th>出席回数</th>
+            <th><button type="button">出席</button></th>
+        </tr>
+    </table>
+</body>
+</html>
