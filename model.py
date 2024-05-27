@@ -7,6 +7,7 @@ from sqlalchemy import (
     ForeignKey,
     MetaData,
     select,
+    delete,  # ここにdeleteを追加
 )
 from sqlalchemy.orm import sessionmaker
 
@@ -67,3 +68,35 @@ class DatabaseManager:
 # db_manager = DatabaseManager()
 # db_manager.create_tables()
 # accounts = db_manager.select_all_accounts()
+
+    def register_user_class(self, user_id, class_id, absences=0):
+        with self.get_session() as session:
+            session.execute(
+                self.class_registration.insert().values(
+                    user_id=user_id, class_id=class_id, absences=absences
+                )
+            )
+            session.commit()
+
+    def remove_user_class(self, user_id, class_id):
+        with self.get_session() as session:
+            session.execute(
+                delete(self.class_registration).where(
+                    (self.class_registration.c.user_id == user_id) &
+                    (self.class_registration.c.class_id == class_id)
+                )
+            )
+            session.commit()
+
+    def list_user_class(self, user_id):
+        with self.get_session() as session:
+            query = select(self.class_registration).where(
+                self.class_registration.c.user_id == user_id
+            )
+            result = session.execute(query).fetchall()
+            return result
+        
+#実装確認     
+# インスタンスを作成してからメソッドを呼び出す
+#db_manager = DatabaseManager()
+#db_manager.register_user_class(user_id=1, class_id=101)
