@@ -9,6 +9,14 @@ from sqlalchemy import (
     select,
 )
 from sqlalchemy.orm import sessionmaker
+from flask_login import UserMixin
+
+
+class User(UserMixin):
+    def __init__(self, user_id, email, password):
+        self.id = user_id  # flask-login requires `id` attribute
+        self.email = email
+        self.password = password
 
 
 class DatabaseManager:
@@ -72,10 +80,14 @@ class DatabaseManager:
         with self.get_session() as session:
             query = select(self.accounts).where(self.accounts.c.email == email)
             result = session.execute(query).fetchone()
-            return result
+            if result:
+                return User(result.user_id, result.email, result.password)
+            return None
 
-
-# 例えば:
-# db_manager = DatabaseManager()
-# db_manager.create_tables()
-# accounts = db_manager.select_all_accounts()
+    def get_account_by_id(self, user_id):
+        with self.get_session() as session:
+            query = select(self.accounts).where(self.accounts.c.user_id == user_id)
+            result = session.execute(query).fetchone()
+            if result:
+                return User(result.user_id, result.email, result.password)
+            return None

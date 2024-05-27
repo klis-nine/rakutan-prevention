@@ -1,24 +1,25 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head>
-	<meta charset="UTF-8">
-	<title>落単回避アプリ</title>
-	<link rel="stylesheet" href="create-style.css">
-</head>
+  <head>
+    <meta charset="UTF-8" />
+    <title>落単回避アプリ</title>
+    <link rel="stylesheet" href="create-style.css" />
+  </head>
 
-<body>
+  <body>
     <header>
-        <img src="icon.png">
-		<h2 class="title">落単回避！</h2>
+      <img src="icon.png" />
+      <h2 class="title">落単回避！</h2>
     </header>
 
     <center><h1>ログイン</h1></center>
-    メールアドレス<br>
-    <input type="text" name="name"><br>
-    パスワード<br>
-    <input type="text" name="name"><br>
+    <form action="/user/login" method="POST">
+      メールアドレス<br />
+      <input type="text" name="email" /><br />
+      パスワード<br />
+      <input type="password" name="password" /><br />
 
-    <center><button type="button">ログイン</button></center>
-
-</body>
+      <center><button type="submit">ログイン</button></center>
+    </form>
+  </body>
 </html>
