@@ -62,6 +62,18 @@ class DatabaseManager:
             result = session.execute(query).fetchall()
             return result
 
+    def add_account(self, email, hashed_password):
+        with self.get_session() as session:
+            query = self.accounts.insert().values(email=email, password=hashed_password)
+            session.execute(query)
+            session.commit()
+
+    def get_account(self, email):
+        with self.get_session() as session:
+            query = select(self.accounts).where(self.accounts.c.email == email)
+            result = session.execute(query).fetchone()
+            return result
+
 
 # 例えば:
 # db_manager = DatabaseManager()
