@@ -28,7 +28,7 @@ def hash_password(password):
 
 @app.route("/")
 def return_top():
-    return "<p>Hello, World! トップのランディングページです</p>"
+    return "<p>Hello, World! トップのランディングページです</p> サインアップ→<a href='/user/signup'>こちら</a> ログイン→<a href='/user/login'>こちら</a>"
 
 
 @app.route("/user/main")
@@ -54,10 +54,18 @@ def return_user_signup():
             "Creating account with email: {} and password: {}".format(email, password)
         )
         hashed_password = hash_password(password)
-        db = DatabaseManager()
-        db.add_account(email, hashed_password)
-        print("Account created")
-        return redirect("/user/login")
+        if db.get_account(email):
+            print("該当するアカウントは既に存在しています")
+            # TODO: このprintをいい感じにクライアントに反映させる
+            return redirect("/user/signup")
+        try:
+            db = DatabaseManager()
+            db.add_account(email, hashed_password)
+            print("Account created")
+            return redirect("/user/login")
+        except Exception as e:
+            print(e)
+            return redirect("/user/signup")
     return render_template("prev-create.html")
 
 
