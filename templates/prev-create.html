@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>落単回避アプリ</title>
+    <link rel="stylesheet" href="create-style.css" />
+  </head>
+
+  <body>
+    <header>
+      <img src="icon.png" />
+      <h2 class="title">落単回避！</h2>
+      アカウント名 ログアウト
+    </header>
+
+    <center><h1>アカウント作成</h1></center>
+    <form action="/user/signup" method="POST">
+      メールアドレス<br />
+      <input type="text" name="email" /><br />
+      パスワード<br />
+      <input type="password" name="password" /><br />
+
+      <center><button type="submit">作成する</button></center>
+    </form>
+
+    <li class="menu-item"><a href="#">アカウントをお持ちの方はこちら</a></li>
+  </body>
+</html>
