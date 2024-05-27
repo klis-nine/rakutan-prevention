@@ -54,12 +54,12 @@ def return_user_signup():
             "Creating account with email: {} and password: {}".format(email, password)
         )
         hashed_password = hash_password(password)
+        db = DatabaseManager()
         if db.get_account(email):
             print("該当するアカウントは既に存在しています")
             # TODO: このprintをいい感じにクライアントに反映させる
             return redirect("/user/signup")
         try:
-            db = DatabaseManager()
             db.add_account(email, hashed_password)
             print("Account created")
             return redirect("/user/login")
