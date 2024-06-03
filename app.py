@@ -34,9 +34,7 @@ def return_top():
 @app.route("/user/main")
 @login_required
 def return_user_main():
-    return "<p>Hello, World! ユーザーメインページです</p><p>あなたのユーザーIDは{}です</p>".format(
-        current_user.id
-    )
+    return render_template("prev-main.html", user_email=current_user.email)
 
 @app.route("/user/settings")
 @login_required
