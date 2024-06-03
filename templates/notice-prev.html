@@ -3,27 +3,34 @@
 
 <head>
 	<meta charset="UTF-8">
-	<title>落単回避アプリ</title>
-	<link rel="stylesheet" href="situation-style.css">
+	<title>授業時間のお知らせ | Tsuku-Alert</title>
+	<link rel="stylesheet" href="confirm-style.css">
 </head>
 
 <body>
     <header>
         <img src="icon.png">
-		<h2 class="title">落単回避！</h2>
-        <ul>
-            <li><a href="#">アカウント名</a></li>
-            <li><a href="#">ログアウト</a></li>
-        </ul>
+		<h2 class="title">Tsuku-Alert</h2>
+        <nav>
+            <ul>
+                <li><a href="#">ログアウト</a></li>
+            </ul>
+        </nav>
     </header>
 
-    <center><h1>お知らせ</h1></center>
     <center>
-        <h1>授業〇〇分前です！</h1>
-        科目名：ABC概論
-        曜日時限：月５６
-        教室名：７AXXX<br>
-        <button type="button"><a href="">閉じる</a></button>
+        <div class="triangle">
+        </div>
+        <p class="page-title">お知らせ</p>
     </center>
+    <div class="square">
+    <center>
+        <p class="add-text">授業〇〇分前です！</p>
+        <p class="normal-text">科目名：ABC概論</p>
+        <p class="normal-text">曜日時限：月５６</p>
+        <p class="normal-text">教室名：７AXXX</p>
+        <button class="for-button" type="button">閉じる</button>
+    </center>
+    </div>
 </body>
 </html>

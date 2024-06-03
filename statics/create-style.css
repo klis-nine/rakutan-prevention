@@ -65,3 +65,8 @@ header{
         border-radius: 30px;
         background-position:center;
     }
+
+    .pass-forget{
+        position:relative;
+        top: 30px
+    }
