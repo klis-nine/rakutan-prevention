@@ -25,19 +25,16 @@ def load_user(user_id):
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
 
-
 @app.route("/")
 def return_top():
-    return "<p>Hello, World! トップのランディングページです</p> サインアップ→<a href='/user/signup'>こちら</a> ログイン→<a href='/user/login'>こちら</a>"
-
+    if current_user.is_authenticated:
+        return redirect("/user/main")
+    return render_template("prev-first.html")
 
 @app.route("/user/main")
 @login_required
 def return_user_main():
-    return "<p>Hello, World! ユーザーメインページです</p><p>あなたのユーザーIDは{}です</p>".format(
-        current_user.id
-    )
-
+    return render_template("prev-main.html", user_email=current_user.email)
 
 @app.route("/user/settings")
 @login_required
@@ -118,4 +115,4 @@ def return_user_others():
 
 
 if __name__ == "__main__":
-    app.run()
+   app.run()
