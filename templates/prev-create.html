@@ -9,20 +9,27 @@
   <body>
     <header>
       <img src="icon.png" />
-      <h2 class="title">落単回避！</h2>
-      アカウント名 ログアウト
+      <p class="title">Tsuku-Alart</p>
     </header>
-
-    <center><h1>アカウント作成</h1></center>
+    <center><p class="page-title">アカウント作成</p></center>
     <form action="/user/signup" method="POST">
-      メールアドレス<br />
+      <p class="form-name">メールアドレス</p>
       <input type="text" name="email" /><br />
-      パスワード<br />
-      <input type="password" name="password" /><br />
-
+      <p class="form-name">パスワード</p>
+      <span class="form-move">
+        <input type="password" name="password" /><br />
+      </span>
       <center><button type="submit">作成する</button></center>
     </form>
+      <center>
+        <button class="for-button" onclick="location.href" ="#">
+          作成する
+        </button>
+      </center>
+    </div>
 
-    <li class="menu-item"><a href="#">アカウントをお持ちの方はこちら</a></li>
+    <center>
+      <li class="menu-item"><a href="#">アカウントをお持ちの方はこちら</a></li>
+    </center>
   </body>
 </html>
