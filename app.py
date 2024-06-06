@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, url_for
 from model import DatabaseManager, User
 from flask_login import (
     LoginManager,
@@ -60,9 +60,12 @@ def return_user_signup():
             # TODO: このprintをいい感じにクライアントに反映させる
             return redirect("/user/signup")
         try:
-            db.add_account(email, hashed_password)
-            print("Account created")
-            return redirect("/user/login")
+            if db.add_account(email, hashed_password):
+                print("Account created")
+                return redirect(url_for('return_user_login'))
+            else:
+                print("Account creation failed")
+                return redirect(url_for('return_user_signup'))
         except Exception as e:
             print(e)
             return redirect("/user/signup")
@@ -116,6 +119,40 @@ def return_user_alarm():
 def return_user_others():
     return "<p>Hello, World! その他の設定ページです</p>"
 
+@app.route("/user/main/register_class/confirm", methods=["GET", "POST"])
+@login_required
+def return_class_registration_confirm():
+    class_id = request.args.get("class_id")
+    db = DatabaseManager()
+
+    print(f"クラスID: {class_id}") #クエリパラメータのデバッグ用ログ
+
+    if request.method == "POST":
+        class_id = request.form.get("class_id")
+        print(f"クラスID (POST): {class_id}") #デバッグ用ログ 
+
+        if class_id:    
+            if db.register_user_class(current_user.id, class_id):
+                return redirect(url_for('return_user_main'))
+            else: 
+                print("クラス登録に失敗しました")  # デバッグ用ログ
+                return "クラス登録に失敗しました。"
+        
+        else:
+            print("クラスIDが指定されていません (POST)")  # デバッグ用ログ
+            return "クラスIDが指定されていません。"
+
+    if class_id:    
+        class_info = db.get_class("class_id")
+        if class_info:
+            return render_template("search-confirm.html", class_info=class_info)
+        else:
+            print("指定されたクラスが見つかりませんでした")  # デバッグ用ログ
+            return "指定されたクラスが見つかりませんでした。"
+    else:
+        print("クラスIDが指定されていません (GET)")  # デバッグ用ログ
+        return "クラスIDが指定されていません。"
+    
 
 if __name__ == "__main__":
     app.run()
