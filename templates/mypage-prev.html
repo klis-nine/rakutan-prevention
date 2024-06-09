@@ -3,43 +3,37 @@
 
 <head>
 	<meta charset="UTF-8">
-	<title>落単回避アプリ</title>
-	<link rel="stylesheet" href="situation-style.css">
+	<title>マイページ・各種設定 | Tsuku-Alert</title>
+	<link rel="stylesheet" href="set-style.css">
 </head>
 
 <body>
     <header>
         <img src="icon.png">
-		<h2 class="title">落単回避！</h2>
-        <ul>
-            <li><a href="#">アカウント名</a></li>
-            <li><a href="#">ログアウト</a></li>
-        </ul>
+		<h2 class="title">Tsuku-Alert</h2>
+        <nav>
+            <ul>
+                <li><a href="#">ログアウト</a></li>
+            </ul>
+        </nav>
     </header>
 
-    <center><h1>マイページ・各種設定</h1></center>
-    <p>ユーザ名：(アカウント名)</p>
-    <p>変更後:
-        <form action="" method="post">
-            <input type="text" name="username">
-        </form>
-        <button type="button">変更</button>
-    </p>
-    <p>パスワード変更</p>
-        現在のパスワード：
-        <form action="" method="post">
+    <center>
+        <div class="triangle">
+        </div>
+        <p class="page-title">マイページ・各種設定</p>
+    </center>
+    
+    <p class="set-menu">パスワード変更</p>
+        <p class="normal">現在のパスワード：</p>
+        <form class="forms" action="" method="post">
             <input type="password" name="oldpass">
         </form><br>
-        新しいパスワード：
-        <form action="" method="post">
+        <p class="normal2">新しいパスワード：</p>
+        <form class="forms2" action="" method="post">
             <input type="password" name="newpass">
         </form>
-        <button type="button">変更</button><br>
-    <p><a href="">パスワードを忘れた場合</a></p>
-    画面表示：
-        <select name="darkmode">
-            <option>ダークモード</option>
-            <option>ライトモード</option>
-        </select>
+        <button class="for-button" type="button">変更</button><br>
+    <p class="forget"><a href="">パスワードを忘れた場合</a></p>
 </body>
 </html>

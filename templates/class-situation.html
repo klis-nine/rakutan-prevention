@@ -3,54 +3,70 @@
 
 <head>
 	<meta charset="UTF-8">
-	<title>落単回避アプリ</title>
-	<link rel="stylesheet" href="situation-style.css">
+	<title>履修状況登録 | Tsuku-Alert</title>
+	<link rel="stylesheet" href="sit-style.css">
 </head>
 
 <body>
     <header>
         <img src="icon.png">
-		<h2 class="title">落単回避！</h2>
-        <ul>
-            <li><a href="#">アカウント名</a></li>
-            <li><a href="#">ログアウト</a></li>
-        </ul>
+		<h2 class="title">Tsuku-Alert</h2>
+        <nav>
+            <ul>
+                <li><a href="#">ログアウト</a></li>
+            </ul>
+        </nav>
     </header>
     
-    <center><h1>履修状況登録</h1></center>
+    <center>
+        <div class="triangle">
+        </div>
+        <p class="page-title">履修状況登録</p>
+    </center>
     <center>
         <form action="#" method="post">
-            科目番号、科目名などで検索
-            <input type="text" name="keyword" value="" size="15" />
+            <input type="text"  class="search-form" placeholder="科目番号、科目名などで検索" name="keyword" value="" size="15" />
             <input type="hidden" name="bid" value="%{BID}" />
-            <input type="submit" name="ACMS_POST_2GET" value="検索" />
+            <input type="submit" class="search-btn" name="ACMS_POST_2GET" value="検索" />
         </form>
     </center>
     
-    <table>
+    <center>
+    <table class="table-btn">
         <tr>
-            <td><button type="button">春A</button></td>
-            <td><button type="button">春B</button></td>
-            <td><button type="button">春C</button></td>
-            <td><button type="button">秋A</button></td>
-            <td><button type="button">秋B</button></td>
-            <td><button type="button">秋C</button></td>
+            <td><button class="for-button" type="button">春A</button></td>
+            <td><button class="for-button" type="button">春B</button></td>
+            <td><button class="for-button" type="button">春C</button></td>
+            <td><button class="for-button" type="button">秋A</button></td>
+            <td><button class="for-button" type="button">秋B</button></td>
+            <td><button class="for-button" type="button">秋C</button></td>
         </tr>
     </table>
+    </center>
 
-    <table>
+    <center>
+    <table class="table-design">
+        <tbody>
         <tr>
-            <th>科目番号</th>
-            <th>曜日時限</th>
-            <th>科目名</th>
-            <th>教室名</th>
+            <th class="color">科目番号</th>
+            <th class="color">曜日時限</th>
+            <th class="color">科目名</th>
+            <th class="color">教室名</th>
         </tr>
         <tr>
             <th>GExxxxx</th>
             <th>月56</th>
-            <th>ABC概論</th>
+            <th><a href="">ABC概論</a></th>
             <th>7Axxx</th>
         </tr>
+        <tr>
+            <th>GExxxxx</th>
+            <th>火34</th>
+            <th><a href="">DEF演習</a></th>
+            <th>7Cxxx</th>
+        </tr>
+        </tbody>
     </table>
+    </center>
 </body>
 </html>

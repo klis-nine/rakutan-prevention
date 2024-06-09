@@ -1,0 +1,176 @@
+header{
+    display:flex;
+    width:100%;
+    height:60px;
+    background: color #daeae5;
+    align-items:center;
+    }
+
+    body{
+        margin:0;
+    }
+
+    ul{
+        list-style:none;
+        margin:0;
+        display:flex;
+    }
+
+    li{
+        margin:0 0 0 15px;
+        font-size:14px;
+    }
+
+    a{
+        font-weight:bold;
+        text-decoration:none;
+    }
+
+    a:link{
+        color: #000;
+    }
+
+    a:hover{
+        color:#ff8052;
+    }
+
+    .title{
+        margin-right:auto;
+        padding-left:6px;
+        font-size:25px;
+        font-weight:bold;
+        color:#165B6A;
+    } 
+
+    .square{
+        background: #e5e5e5;
+        margin:auto;
+        position:relative;
+        top:30px;
+        width: 650px;
+        height: 370px;
+        border-radius: 30px;
+    }
+
+    .class-title{
+        position: relative;
+        top:20px;
+        left:20px;
+    }
+
+    .class-name{
+        color:#165B6A;
+        font-weight: bold;
+        font-size: 50px;
+        position:relative;
+    }
+
+    .class-number{
+        color:#000;
+        font-size:24px;
+        position:relative;
+        left: 50px;
+    }
+
+    .normal-text{
+        font-size: 20px;
+        position:relative;
+        bottom:60px;
+        left:40px;
+    }
+
+    .setting{
+        color:#165B6A;
+        font-size:30px;
+        position:relative;
+        bottom:80px;
+        left:30px;
+    }
+
+    .pos-setting{
+        position:relative;
+        left:250px;
+    }
+
+    .del-padding{
+        position:relative;
+        bottom:50px;
+    }
+
+    .left-button{
+        padding: 7px 15px;
+        background: #ff8052;
+        color:#ffffff;
+        font-size:25px;
+        font-weight:bold;
+        border-radius: 50px 0px 0px 50px;
+        border:none;
+        position:relative;
+        bottom:80px;
+    }
+
+    .right-button{
+        padding: 11px 20px;
+        background: #ff8052;
+        color:#ffffff;
+        font-size:25px;
+        font-weight:bold;
+        border-radius: 0px 50px 50px 0px;
+        border:none;
+        position:relative;
+        bottom:80px;
+    }
+
+    .attend-con{
+        padding: 14px 40px;
+        background:#fff;
+        position:relative;
+        bottom:83px;
+    }
+
+    .return{
+        position:relative;
+        left : 100px;
+        color : #4c4c4c;
+    }
+
+    .batsu{
+        font-size: 40px;
+        font-weight: bold;
+        position:relative;
+        bottom:70px;
+        left:580px;
+
+    }
+
+    .selectbox-3 {
+        display: inline-flex;
+        align-items: center;
+        position: relative;
+        bottom:70px;
+        right:75px;
+    }
+
+    .selectbox-3::after {
+        position: absolute;
+        right: 15px;
+        width: 10px;
+        height: 7px;
+        background-color: #535353;
+        clip-path: polygon(0 0, 100% 0, 50% 100%);
+        content: '';
+        pointer-events: none;
+    }
+
+.selectbox-3 select {
+    appearance: none;
+    min-width: 230px;
+    height: 2.8em;
+    padding: .4em calc(.8em + 30px) .4em .8em;
+    border: 1px solid #b3b3b3;
+    border-radius: 3px;
+    background-color: #fff;
+    color: #333333;
+    font-size: 1em;
+    cursor: pointer;
+}

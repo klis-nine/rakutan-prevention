@@ -50,3 +50,18 @@ header{
         border-radius: 10px;
         border:none;
     }
+
+    .page-title{
+        position:relative;
+        top: 25px;
+        font-size: 30px;
+    }
+
+    .square{
+        background: #e5e5e5;
+        margin:auto;
+        width: 500px;
+        height: 280px;
+        border-radius: 30px;
+        background-position:center;
+    }

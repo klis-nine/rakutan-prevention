@@ -2,34 +2,50 @@
 <html lang="ja">
     <head>
         <meta charset="UTF-8">
-        <title>落単回避アプリ</title>
-        <link rel="stylesheet" href="prevstyle1.css">
+        <title>履修登録画面 | TsukuAlert</title>
+        <link rel="stylesheet" href="detale-style.css">
     </head>
 
     <body>
         <header>
             <img src="icon.png">
-            <h2 class="title">落単回避！</h2>
-            <ul>
-                <li><a href="#">アカウント名</a></li>
-                <li><a href="#">ログアウト</a></li>
-            </ul>
+            <h2 class="title">Tsuku-Alert</h2>
+            <nav>
+                <ul>
+                    <li><a href="#">ログアウト</a></li>
+                </ul>
+            </nav>
         </header>
         
-        ABC概論<button type="button"><a href="">✕</a></button><br>
-        科目番号:GExxxxx<br>
-        時限:春AB<br>
-        月56<br>
-        教室名:7Axxx<br>
-        出席回数
-        <button type="button">－</button>1<button type="button">+</button><br>
-        アラーム通知
-        <select name="sound">
-            <option>10分前</option>
-            <option>30分前</option>
-            <option>60分前</option>
-        </select>
-        前に通知
+        <div class="square">
+        <p class="class-title"><span class="class-name">ABC概論</span>
+            <span class="class-number">科目番号 : GExxxxx</span>
+        </p>
+        <div class="batsu"><a href="#">✕</a></div>
+
+        <p class="normal-text"><span>時限:春AB</span>　<span>月56</span></p>
+        <p class="normal-text">教室名:7Axxx</p>
+
+        <table>
+        <tr>
+            <td><p class="setting">出席回数</p></td>
+            <td class="pos-setting"><button class="left-button" type="button">－</button><span class="attend-con">1</span><button class="right-button" type="button">+</button></td>
+        </tr>
+        </table>
+
+        <table class="del-padding">
+        <tr>
+            <td><p class="setting">アラーム通知</p></td>
+            <td class="pos-setting">
+                <label class="selectbox-3">
+                <select name="time">
+                    <option>10分前</option>
+                    <option>30分前</option>
+                    <option>60分前</option>
+                </select>
+                </label>
+            </td>
+        </tr>
 
     </body>
 </html>

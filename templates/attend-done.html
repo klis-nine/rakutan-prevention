@@ -3,27 +3,29 @@
 
 <head>
 	<meta charset="UTF-8">
-	<title>落単回避アプリ</title>
-	<link rel="stylesheet" href="situation-style.css">
+	<title>出欠席確認 | Tsuku-Alert</title>
+	<link rel="stylesheet" href="attend-style.css">
 </head>
 
 <body>
     <header>
         <img src="icon.png">
-		<h2 class="title">落単回避！</h2>
-        <ul>
-            <li><a href="#">アカウント名</a></li>
-            <li><a href="#">ログアウト</a></li>
-        </ul>
+		<h2 class="title">Tsuku-Alert</h2>
+        <nav>
+            <ul>
+                <li><a href="#">ログアウト</a></li>
+            </ul>
+        </nav>
     </header>
 
-    <center><h1>出席しました！</h1></center>
-    <h1>✕</h1>
+    <div class="square">
+    <center><p class="done">出席しました！</p></center>
+    <div class="batsu"><a href="#">✕</a></div>
     <center>
-        <p>科目名：ABC概論</p>
-        <p>〇月✕日</p>
-        <p>出席回数：2回</p>
-        <button type="button">出席を取り消す</button>
+        <p class="class-name">科目名：ABC概論</p>
+        <p class="class-name">〇月✕日</p>
+        <p class="class-name">出席回数：2回</p>
+        <button class="for-button" type="button">出席を取り消す</button>
     </center>
 </body>
 </html>

@@ -3,37 +3,49 @@
 
 <head>
 	<meta charset="UTF-8">
-	<title>落単回避アプリ</title>
-	<link rel="stylesheet" href="situation-style.css">
+	<title>アラーム設定 | Tsuku-Alert</title>
+	<link rel="stylesheet" href="set-style.css">
 </head>
 
 <body>
     <header>
         <img src="icon.png">
-		<h2 class="title">落単回避！</h2>
-        <ul>
-            <li><a href="#">アカウント名</a></li>
-            <li><a href="#">ログアウト</a></li>
-        </ul>
+		<h2 class="title">Tsuku-Alert</h2>
+        <nav>
+            <ul>
+                <li><a href="#">ログアウト</a></li>
+            </ul>
+        </nav>
     </header>
 
-    <center><h1>アラーム設定</h1></center>
-    <h2>デフォルト設定</h2>
-    時刻設定：
+    <center>
+        <div class="triangle">
+        </div>
+        <p class="page-title">アラーム設定</p>
+    </center>
+
+    <p class="set-menu">・デフォルト設定</p>
+    <p class="normal">時刻設定：</p>
+    <label class="selectbox-3">
     <select name="time-set">
         <option>10分前</option>
         <option>30分前</option>
         <option>60分前</option>
     </select>
-    <br>
-    サウンド：
+    </label>
+
+    <p class="normal">サウンド：</p>
+    <label class="selectbox-3">
     <select name="sound-set">
         <option>サウンド１</option>
         <option>サウンド２</option>
         <option>サウンド３</option>
     </select>
-    <br>
-    <h2>個別のアラーム設定は<a href="">→履修状況登録</a></h2>
+    </label>
+
+    <p class="notice">分前に通知</p>
+
+    <h2 class="links">個別のアラーム設定は<a href="">→履修状況登録</a></h2>
 </body>
 </html>
 
