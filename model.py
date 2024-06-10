@@ -18,6 +18,7 @@ class User(UserMixin):
         self.id = user_id  # flask-login requires `id` attribute
         self.email = email
         self.password = password
+        self.phone_number = None
 
 
 class DatabaseManager:
@@ -31,6 +32,7 @@ class DatabaseManager:
             Column("user_id", Integer, primary_key=True),
             Column("email", String(255), unique=True),
             Column("password", String(255)),
+            Column("phone_number", String(255)),
         )
 
         self.classes = Table(
@@ -71,7 +73,15 @@ class DatabaseManager:
             result = session.execute(query).fetchall()
             return result
 
-    def add_class(self, class_id, class_room, class_name, class_semester, class_period, number_of_classes):
+    def add_class(
+        self,
+        class_id,
+        class_room,
+        class_name,
+        class_semester,
+        class_period,
+        number_of_classes,
+    ):
         try:
             with self.get_session() as session:
                 insert_stmt = self.classes.insert().values(
@@ -80,7 +90,7 @@ class DatabaseManager:
                     class_name=class_name,
                     class_semester=class_semester,
                     class_period=class_period,
-                    number_of_classes=number_of_classes
+                    number_of_classes=number_of_classes,
                 )
                 session.execute(insert_stmt)
                 session.commit()
@@ -102,15 +112,16 @@ class DatabaseManager:
         with self.get_session() as session:
             if search_words:
                 query = select(self.classes).where(
-                    (self.classes.c.class_name.like(f"%{search_words}%")) |
-                    (self.classes.c.class_room.like(f"%{search_words}%")) |
-                    (self.classes.c.class_semester.like(f"%{search_words}%"))
+                    (self.classes.c.class_name.like(f"%{search_words}%"))
+                    | (self.classes.c.class_room.like(f"%{search_words}%"))
+                    | (self.classes.c.class_semester.like(f"%{search_words}%"))
                 )
             else:
                 query = select(self.classes)
-            
+
             result = session.execute(query).fetchall()
             return [dict(row) for row in result]
+
     def add_account(self, email, hashed_password):
         with self.get_session() as session:
             query = self.accounts.insert().values(email=email, password=hashed_password)
@@ -125,10 +136,10 @@ class DatabaseManager:
                 return User(result.user_id, result.email, result.password)
             return None
 
-# 例えば:
-# db_manager = DatabaseManager()
-# db_manager.create_tables()
-# accounts = db_manager.select_all_accounts()
+    # 例えば:
+    # db_manager = DatabaseManager()
+    # db_manager.create_tables()
+    # accounts = db_manager.select_all_accounts()
 
     def register_user_class(self, user_id, class_id, absences=0):
         with self.get_session() as session:
@@ -143,8 +154,8 @@ class DatabaseManager:
         with self.get_session() as session:
             session.execute(
                 delete(self.class_registration).where(
-                    (self.class_registration.c.user_id == user_id) &
-                    (self.class_registration.c.class_id == class_id)
+                    (self.class_registration.c.user_id == user_id)
+                    & (self.class_registration.c.class_id == class_id)
                 )
             )
             session.commit()
@@ -156,11 +167,11 @@ class DatabaseManager:
             )
             result = session.execute(query).fetchall()
             return result
-        
-#実装確認     
-# インスタンスを作成してからメソッドを呼び出す
-#db_manager = DatabaseManager()
-#db_manager.register_user_class(user_id=1, class_id=101)
+
+    # 実装確認
+    # インスタンスを作成してからメソッドを呼び出す
+    # db_manager = DatabaseManager()
+    # db_manager.register_user_class(user_id=1, class_id=101)
     def get_account_by_id(self, user_id):
         with self.get_session() as session:
             query = select(self.accounts).where(self.accounts.c.user_id == user_id)
