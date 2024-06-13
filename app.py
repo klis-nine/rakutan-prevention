@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 from model import DatabaseManager, User
 from flask_login import (
     LoginManager,
@@ -8,6 +8,9 @@ from flask_login import (
     current_user,
 )
 import hashlib
+import pandas as pd 
+import json 
+from your_module import add_class, get_class
 
 app = Flask(__name__)
 app.secret_key = "secret"
@@ -60,9 +63,12 @@ def return_user_signup():
             # TODO: このprintをいい感じにクライアントに反映させる
             return redirect("/user/signup")
         try:
-            db.add_account(email, hashed_password)
-            print("Account created")
-            return redirect("/user/login")
+            if db.add_account(email, hashed_password):
+                print("Account created")
+                return redirect(url_for('return_user_login'))
+            else:
+                print("Account creation failed")
+                return redirect(url_for('return_user_signup'))
         except Exception as e:
             print(e)
             return redirect("/user/signup")
@@ -116,6 +122,78 @@ def return_user_alarm():
 def return_user_others():
     return "<p>Hello, World! その他の設定ページです</p>"
 
+@app.route("/user/main/register_class/confirm", methods=["GET", "POST"])
+@login_required
+def return_class_registration_confirm():
+    class_id = request.args.get("class_id")
+    db = DatabaseManager()
+
+    print(f"クラスID: {class_id}") #クエリパラメータのデバッグ用ログ
+
+    if request.method == "POST":
+        class_id = request.form.get("class_id")
+        print(f"クラスID (POST): {class_id}") #デバッグ用ログ 
+
+        if class_id:    
+            if db.register_user_class(current_user.id, class_id):
+                return redirect(url_for('return_user_main'))
+            else: 
+                print("クラス登録に失敗しました")  # デバッグ用ログ
+                return "クラス登録に失敗しました。"
+        
+        else:
+            print("クラスIDが指定されていません (POST)")  # デバッグ用ログ
+            return "クラスIDが指定されていません。"
+
+    if class_id:    
+        class_info = db.get_class("class_id")
+        if class_info:
+            return render_template("search-confirm.html", class_info=class_info)
+        else:
+            print("指定されたクラスが見つかりませんでした")  # デバッグ用ログ
+            return "指定されたクラスが見つかりませんでした。"
+    else:
+        print("クラスIDが指定されていません (GET)")  # デバッグ用ログ
+        return "クラスIDが指定されていません。"
+    
+# 追加: 授業情報のインポートエンドポイント
+@app.route("/import_classes", methods=["GET"])
+def import_classes():
+    try:
+        # 正しい列インデックスを指定
+        df = pd.read_csv("kdb.csv", skiprows=3, header=None, usecols=[0, 2, 3])
+        df.dropna(subset=[0], inplace=True)
+        df = df[df[0] != "科目番号"].dropna(thresh=3)
+        df.fillna("", inplace=True)
+
+        # 授業IDと授業名を分離
+        df['class_id'] = df[0].apply(lambda x: ''.join(filter(str.isdigit, str(x))))
+        df['class_name'] = df[0].apply(lambda x: ''.join(filter(lambda c: not c.isdigit(), str(x))).strip())
+
+        for class_info in df.values.tolist():
+            add_class({
+                "class_id": class_info[3],  # class_id列
+                "class_name": class_info[4],  # class_name列
+                "class_time": class_info[1],  # 授業時間
+                "class_location": class_info[2],  # 教室
+            })
+
+        return jsonify({"message": "授業情報のインポートが完了しました。"}), 200
+    except Exception as e:
+        return jsonify({"message": "エラーが発生しました。", "error": str(e)}), 500
+
+
+# 追加: 検索フォームの処理
+@app.route("/search", methods=["GET", "POST"])
+@login_required
+def search_classes():
+    keyword = request.form.get("keyword")
+    db = DatabaseManager()
+    if keyword:
+        classes = db.search_classes(keyword)
+    else:
+        classes = []
+    return render_template("class-situation.html", classes=classes)
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)

@@ -4,7 +4,7 @@
 <head>
 	<meta charset="UTF-8">
 	<title>落単回避アプリ</title>
-	<link rel="stylesheet" href="situation-style.css">
+	<link rel="stylesheet">
 </head>
 
 <body>
@@ -41,12 +41,14 @@
             <th>科目名</th>
             <th>教室名</th>
         </tr>
+        {% for class in classes %}
         <tr>
-            <th>GExxxxx</th>
-            <th>月56</th>
-            <th>ABC概論</th>
-            <th>7Axxx</th>
+            <td>{{ class.class_id }}</td>
+            <td>{{ class.class_time }}</td>
+            <td>{{ class.class_name }}</td>
+            <td>{{ class.class_location }}</td>
         </tr>
+        {% endfor %}
     </table>
 </body>
 </html>

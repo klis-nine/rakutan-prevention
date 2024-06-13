@@ -14,9 +14,11 @@
         
         <center><h1>検索結果</h1></center>
         <center>この授業を追加しますか？</center>
-        <center>科目名：ABC概論</center>
-        <center>曜日時限：月56</center>
-        <center>教室名：7Axxx</center>
-        <center><button type="button">追加する</button></center>
+        <center>科目名：{{ class_info.class_name }}</center>
+        <center>曜日時限：{{ class_info.class_time }}</center>
+        <center>教室名： {{ class_info.class_location }}</center>
+        <from method="post" action="/user/main/register_class/confirm?class_id={{ class_id }}">
+            <p><center><button type="submit">追加する</button></center></p>
+        </from>
     </body>
 </html>
