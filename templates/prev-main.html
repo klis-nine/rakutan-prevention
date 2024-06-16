@@ -1,36 +1,29 @@
 <!DOCTYPE html>
 <html lang="ja">
     <head>
-	    <meta charset="UTF-8">
-	    <title>落単回避アプリ</title>
-	    <link rel="stylesheet" href="static/create-style.css">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>落単回避アプリ</title>
+        <link rel="stylesheet" href="/static/create-style.css">
     </head>
-
     <body>
         <header>
-            <img src="icon.png">
-		    <h2 class="title">落単回避！</h2>
+            <div class="header-container">
+                <h1 class="title">落単回避！</h1>
+            </div>
         </header>
+        <div class="container">
+            <h1>TsukuAlert</h1>
+            <p>筑波大生に向けた授業アラームシステム</p>
+            <p>TsukuAlertを活用して落単を回避しよう！</p>
 
-        <center><h1>TsukuAlert</h1></center>
-        <center>筑波大生に向けた授業アラームシステム</center>
-        <center>TsukuAlertを活用して落単を回避しよう！</center>
-        <p></p>
-
-        <table>
-            <tr>
-                <p>
-                <input type="button" onclick="location.href='/user/main/registration'" value="履修登録確認" class="large-button">
-                <input type="button" onclick="location.href='/user/main/attendence'" value="出欠席確認" class="large-button">
-                </p>
-            </tr>
-            <tr>
-                <p>
-                <input type="button" onclick="location.href='/user/main/alarm_settings'" value="アラーム設定" class="large-button">
-                <input type="button" onclick="location.href='/user/main/others-settings'" value="その他の設定" class="large-button">
-                </p>
-            </tr>
-        </table>
+            <div class="button-container">
+                <button onclick="location.href='/user/main/registration'" class="large-button">履修登録確認</button>
+                <button onclick="location.href='/user/main/attendence'" class="large-button">出欠席確認</button>
+                <button onclick="location.href='/user/main/alarm_settings'" class="large-button">アラーム設定</button>
+                <button onclick="location.href='/user/main/others-settings'" class="large-button">その他の設定</button>
+            </div>
+        </div>
 
         <footer>
             <h2>Links</h2>
@@ -40,7 +33,7 @@
         </footer>
 
         <!-- ユーザーのメールアドレスを表示 -->
-        <div>
+        <div class="user-info">
             <p>現在ログイン中のユーザー: {{ user_email }}</p>
         </div>
     </body>

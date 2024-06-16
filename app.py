@@ -12,7 +12,7 @@ import hashlib
 from datetime import datetime, timedelta
 import threading
 import time
-
+import json
 
 app = Flask(__name__)
 app.secret_key = "secret"
@@ -130,21 +130,25 @@ def return_user_others_pass():
 
 #追記
 # アラーム設定用のエンドポイント
-@app.route('/set_alarm', methods=['POST'])
+@app.route('/user/main/set_alarm', methods=['POST'])
 def set_alarm():
     global alarm_time, alarm_active
 
-    time_str = request.form['timeInput']
+    time_str = request.form['timeInput']  # フォームデータを取得
+    if not time_str:
+        return jsonify({'status': 'error', 'message': 'Time input is missing'}), 400
+    
     alarm_time = datetime.strptime(time_str, "%H:%M").time()
 
     # 現在の日付とセットした時間を組み合わせて datetime オブジェクトを作成
-    now = datetime.now()
-    alarm_time = datetime.combine(now.date(), alarm_time)
+    #now = datetime.now()
+    #alarm_time = datetime.combine(now.date(), alarm_time)
 
-    # アラームをアクティブにする
+    if alarm_time < now:
+        alarm_time += timedelta(days=1)
+
     alarm_active = True
-
-    return "アラームが設定されました！"
+    return jsonify({'status': 'success'})
 
 if __name__ == '__main__':
     # バックグラウンドでアラームを監視するスレッドを起動

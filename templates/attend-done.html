@@ -2,24 +2,45 @@
 <html lang="ja">
 
 <head>
-	<meta charset="UTF-8">
-	<title>落単回避アプリ</title>
-	<link rel="stylesheet" href="situation-style.css">
+    <meta charset="UTF-8">
+    <title>出席完了 - 落単回避アプリ</title>
+    <link rel="stylesheet" href="situation-style.css">
 </head>
 
 <body>
     <header>
         <img src="icon.png">
-		<h2 class="title">落単回避！</h2>
+        <h2 class="title">落単回避！</h2>
     </header>
 
-    <center><h1>出席しました！</h1></center>
-    <h1>✕</h1>
     <center>
+        <h1>出席しました！</h1>
+        <h1>✕</h1>
         <p>科目名：ABC概論</p>
         <p>〇月✕日</p>
-        <p>出席回数：2回</p>
-        <button type="button">出席を取り消す</button>
+        <p>出席回数：<span id="attendanceCount">2</span>回</p>
+        <button type="button" id="cancelAttendanceBtn">出席を取り消す</button>
     </center>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // ここでサーバーから出席回数を取得する処理を追加する
+            // 仮の出席回数として2を表示
+            const attendanceCount = 2; // 仮の出席回数
+
+            // 出席回数を表示する
+            const attendanceCountElement = document.getElementById('attendanceCount');
+            attendanceCountElement.textContent = attendanceCount;
+
+            // 出席を取り消すボタンのクリックイベント
+            const cancelAttendanceBtn = document.getElementById('cancelAttendanceBtn');
+            cancelAttendanceBtn.addEventListener('click', function () {
+                // ここで出席を取り消す処理を追加する
+                alert('出席を取り消します。'); // 例としてアラートを表示
+                // もしくはサーバー側での処理を呼び出す場合はfetch APIなどを使用する
+            });
+        });
+    </script>
 </body>
+
 </html>

@@ -1,11 +1,11 @@
 self.addEventListener('push', function(event) {
     const options = {
-        body: 'アラームの時間になりました！',
+        body: event.data.text(),
         icon: 'icon.png',
         vibrate: [200, 100, 200],
-        tag: 'alarm-notification'
+        tag: 'class-notification'
     };
     event.waitUntil(
-        self.registration.showNotification('アラーム', options)
+        self.registration.showNotification('授業が始まります！', options)
     );
 });

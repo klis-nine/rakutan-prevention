@@ -3,36 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alarm Setting</title>
+    <title>授業開始通知設定</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='time-style.css') }}">
 </head>
 <body>
-    <h1>アラーム設定</h1>
-    <form id="alarmForm">
-        <label for="timeInput">アラーム時刻を設定してください:</label>
-        <input type="time" id="timeInput" name="timeInput" required>
-        <button type="submit">アラームをセット</button>
-    </form>
+    <div class="container">
+        <h1>授業開始通知設定</h1>
+        <form id="alarmForm">
+            <label for="alarmTime">通知時間を設定してください:</label>
+            <input type="time" id="alarmTime" name="alarmTime" required>
+            <br>
+            <button type="submit">通知を設定</button>
+        </form>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/push.js/1.0.12/push.min.js"></script>
     <script>
         document.getElementById('alarmForm').addEventListener('submit', function(event) {
             event.preventDefault();
-            const formData = new FormData(event.target);
-            fetch('/set_alarm', {
-                method: 'POST',
-                body: formData
-            }).then(response => {
-                if (response.ok) {
-                    alert('アラームが設定されました！');
-                } else {
-                    alert('アラームの設定に失敗しました。');
-                }
-            });
+            const alarmTime = document.getElementById('alarmTime').value;
+            scheduleAlarm(alarmTime);
         });
 
-        function showNotification() {
-            if (Notification.permission === 'granted') {
-                navigator.serviceWorker.getRegistration().then(function(reg) {
-                    reg.showNotification('アラームです！');
-                });
+        function scheduleAlarm(alarmTime) {
+            const now = new Date();
+            const [hours, minutes] = alarmTime.split(':').map(Number);
+            const alarmDate = new Date();
+            alarmDate.setHours(hours);
+            alarmDate.setMinutes(minutes);
+            alarmDate.setSeconds(0);
+            alarmDate.setMilliseconds(0);
+
+            const timeUntilAlarm = alarmDate - now;
+
+            if (timeUntilAlarm > 0) {
+                setTimeout(() => {
+                    Push.create("授業が始まります！", {
+                        body: "設定した時間です。授業が始まります！",
+                        timeout: 4000,
+                        onClick: function () {
+                            window.focus();
+                            this.close();
+                        }
+                    });
+                }, timeUntilAlarm);
+                alert(`通知が設定されました: ${alarmTime}`);
+            } else {
+                alert('設定した時間は既に過ぎています。正しい時間を設定してください。');
             }
         }
 
@@ -40,7 +57,12 @@
         if ('Notification' in window && navigator.serviceWorker) {
             Notification.requestPermission().then(function(permission) {
                 if (permission === 'granted') {
-                    navigator.serviceWorker.register('/sw.js');
+                    navigator.serviceWorker.register('/static/sw.js')
+                    .then(function(registration) {
+                        console.log('Service Worker registered with scope:', registration.scope);
+                    }).catch(function(error) {
+                        console.log('Service Worker registration failed:', error);
+                    });
                 }
             });
         }

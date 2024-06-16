@@ -1,46 +1,121 @@
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
-	<meta charset="UTF-8">
-	<title>落単回避アプリ</title>
-	<link rel="stylesheet" href="situation-style.css">
+    <meta charset="UTF-8">
+    <title>落単回避アプリ</title>
+    <link rel="stylesheet" href="/static/attend-prev-style.css">
 </head>
-
 <body>
-    <header>
-        <img src="icon.png">
-		<h2 class="title">落単回避！</h2>
-    </header>
-    
-    <center><h1>出欠席確認</h1></center>
-    
-    <table>
-        <tr>
-            <td><button type="button">春A</button></td>
-            <td><button type="button">春B</button></td>
-            <td><button type="button">春C</button></td>
-            <td><button type="button">秋A</button></td>
-            <td><button type="button">秋B</button></td>
-            <td><button type="button">秋C</button></td>
-        </tr>
-    </table>
+   <div class="container">
+        <h1>出欠席確認</h1>
+        
+        <div class="semester-buttons">
+            <button type="button" id="btnSpringA">春A</button>
+            <button type="button" id="btnSpringB">春B</button>
+            <button type="button" id="btnSpringC">春C</button>
+            <button type="button" id="btnAutumnA">秋A</button>
+            <button type="button" id="btnAutumnB">秋B</button>
+            <button type="button" id="btnAutumnC">秋C</button>
+        </div>
 
-    <table>
-        <tr>
-            <th>科目番号</th>
-            <th>曜日時限</th>
-            <th>科目名</th>
-            <th>出席回数</th>
-            <th>出欠席確認</th>
-        </tr>
-        <tr>
-            <th>GExxxxx</th>
-            <th>月56</th>
-            <th>ABC概論</th>
-            <th>1</th>
-            <th><button type="button">出席</button></th>
-        </tr>
-    </table>
+        <table class="data-table" id="attendanceTable">
+            <thead>
+                <tr>
+                    <th>科目番号</th>
+                    <th>曜日時限</th>
+                    <th>科目名</th>
+                    <th>出席回数</th>
+                    <th>出欠席確認</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- データはJavaScriptで動的に追加 -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const semesterButtons = document.querySelectorAll('.semester-buttons button');
+            const attendanceTable = document.getElementById('attendanceTable').getElementsByTagName('tbody')[0];
+
+            // 各学期ボタンのクリックイベントを設定
+            semesterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const semester = button.textContent.trim();  // ボタンのテキストを学期として取得
+                    fetchAttendanceData(semester);
+                });
+            });
+
+            // 出席ボタンのクリックイベントを設定（動的要素に対するイベント処理）
+            attendanceTable.addEventListener('click', function(event) {
+                if (event.target.tagName === 'BUTTON' && event.target.textContent === '出席') {
+                    const row = event.target.closest('tr');
+                    const subjectNumber = row.cells[0].textContent;
+                    const currentAttendance = parseInt(row.cells[3].textContent, 10);  // 現在の出席回数
+
+                    // 出席回数を更新して表示
+                    row.cells[3].textContent = currentAttendance + 1;
+
+                    // サーバーに出席回数を保存する処理（例としてconsole.logで表示）
+                    const semester = document.querySelector('.semester-buttons button.active').textContent.trim();  // 選択された学期を取得
+                    saveAttendanceToServer(semester, subjectNumber);
+                }
+            });
+
+            // サーバーから出席データを取得する関数
+            function fetchAttendanceData(semester) {
+                // ここにサーバーからデータを取得するfetch処理を記述する（省略）
+                // 仮のデータを表示する例
+                const dummyData = [
+                    { subjectNumber: 'GExxxxx', dayTime: '月56', subjectName: 'ABC概論', attendanceCount: 1 }
+                ];
+
+                // テーブルをクリア
+                attendanceTable.innerHTML = '';
+
+                // データをテーブルに追加
+                dummyData.forEach(data => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${data.subjectNumber}</td>
+                        <td>${data.dayTime}</td>
+                        <td>${data.subjectName}</td>
+                        <td>${data.attendanceCount}</td>
+                        <td><button type="button">出席</button></td>
+                    `;
+                    attendanceTable.appendChild(row);
+                });
+            }
+
+            // サーバーに出席データを保存する関数
+            function saveAttendanceToServer(semester, subjectNumber) {
+                fetch('/api/save-attendance', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        semester: semester,
+                        subjectNumber: subjectNumber
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Attendance saved successfully:', data);
+                    // 必要に応じてUIの更新やメッセージの表示などの処理を追加する
+                })
+                .catch(error => {
+                    console.error('Error saving attendance:', error);
+                    // エラーを処理する（例: エラーメッセージの表示など）
+                });
+            }
+        });
+    </script>
 </body>
 </html>
