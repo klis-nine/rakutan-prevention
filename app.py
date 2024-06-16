@@ -235,6 +235,30 @@ def register_class(payload):
         return jsonify({"message": "User is already registered to this class"}), 400
 
 
+@app.route("/api/class_registrations/<user_id>/<class_id>", methods=["PUT"])
+@requires_auth
+def update_absences(payload, user_id, class_id):
+    current_user_id = payload["sub"]
+    if current_user_id != user_id:
+        return (
+            jsonify(
+                {"message": "You are not allowed to update absences for this user"}
+            ),
+            403,
+        )
+
+    data = request.get_json()
+    absences = data.get("absences")
+    if absences is None:
+        return jsonify({"message": "Absences is required"}), 400
+
+    success = database_manager.update_user_absences(user_id, class_id, absences)
+    if success:
+        return jsonify({"message": "Absences updated successfully"}), 200
+    else:
+        return jsonify({"message": "Failed to update absences"}), 500
+
+
 @app.route("/api/class_registrations/<user_id>/<class_id>", methods=["DELETE"])
 @requires_auth
 def unregister_class(payload, user_id, class_id):

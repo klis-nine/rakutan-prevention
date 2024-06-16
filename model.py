@@ -8,6 +8,7 @@ from sqlalchemy import (
     MetaData,
     select,
     delete,
+    update,
 )
 from sqlalchemy.orm import sessionmaker, declarative_base
 from sqlalchemy.exc import IntegrityError
@@ -40,11 +41,11 @@ class User(Base, UserMixin):
 
 class Class(Base):
     __tablename__ = "classes"
-    class_id = Column(Integer, primary_key=True)
+    class_id = Column(String(255), primary_key=True)
     class_room = Column(String(255))
     class_name = Column(String(255))
     class_semester = Column(String(255))
-    class_period = Column(Integer)
+    class_period = Column(String(255))
     number_of_classes = Column(Integer)
 
     def to_dict(self):
@@ -164,6 +165,25 @@ class DatabaseManager:
             except Exception as e:
                 session.rollback()
                 logger.error(f"Error registering user to class: {e}")
+                return False
+
+    def update_user_absences(self, user_id, class_id, absences):
+        with self.get_session() as session:
+            try:
+                query = (
+                    update(ClassRegistration)
+                    .where(
+                        (ClassRegistration.user_id == user_id)
+                        & (ClassRegistration.class_id == class_id)
+                    )
+                    .values(absences=absences)
+                )
+                session.execute(query)
+                session.commit()
+                return True
+            except Exception as e:
+                session.rollback()
+                logger.error(f"Error updating user absences: {e}")
                 return False
 
     def remove_user_class(self, user_id, class_id):
