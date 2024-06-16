@@ -12,7 +12,6 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import sessionmaker, declarative_base
 from sqlalchemy.exc import IntegrityError
-from flask_login import UserMixin
 import logging
 
 Base = declarative_base()
@@ -22,7 +21,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-class User(Base, UserMixin):
+class User(Base):
     __tablename__ = "accounts"
     user_id = Column(String(255), primary_key=True)
     name = Column(String(255))
@@ -213,3 +212,15 @@ class DatabaseManager:
         with self.get_session() as session:
             result = session.get(User, user_id)
             return result if result else None
+
+    def get_class_by_semester_and_period(self, semester, period):
+        # Semester format on database: "SA,SB"
+        # Period format on database: "1,2"
+        # Look for classes that includes the semester and period
+        with self.get_session() as session:
+            query = select(Class).where(
+                (Class.class_semester.like(f"%{semester}%"))
+                & (Class.class_period.like(f"%{period}%"))
+            )
+            result = session.execute(query).scalars().all()
+            return [cls.to_dict() for cls in result]
