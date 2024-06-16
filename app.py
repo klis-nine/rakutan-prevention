@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect
-from model import DatabaseManager, User
+from model import DatabaseManager, User, alarm_thread
 from flask_login import (
     LoginManager,
     login_user,
@@ -8,6 +8,11 @@ from flask_login import (
     current_user,
 )
 import hashlib
+#追記
+from datetime import datetime, timedelta
+import threading
+import time
+
 
 app = Flask(__name__)
 app.secret_key = "secret"
@@ -15,6 +20,9 @@ app.secret_key = "secret"
 login_manager = LoginManager()
 login_manager.init_app(app)
 
+# アラーム用のグローバル変数
+alarm_time = None
+alarm_active = False
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -93,26 +101,55 @@ def logout():
 @app.route("/user/main/registration")
 @login_required
 def return_user_registration():
-    return "<p>Hello, World! 履修登録ページです</p>"
-
+    #return "<p>Hello, World! 履修登録ページです</p>"
+    return render_template("class-situation.html")
 
 @app.route("/user/main/attendence")
 @login_required
 def return_user_attendence():
-    return "<p>Hello, World! 出欠席確認です</p>"
-
+    #return "<p>Hello, World! 出欠席確認です</p>"
+    return render_template("attend-prev.html")
 
 @app.route("/user/main/alarm_settings")
 @login_required
 def return_user_alarm():
-    return "<p>Hello, World! アラーム設定です</p>"
-
+    #return "<p>Hello, World! アラーム設定です</p>"
+    return render_template("alarm-setting.html")
 
 @app.route("/user/main/others-settings")
 @login_required
 def return_user_others():
-    return "<p>Hello, World! その他の設定ページです</p>"
+    #return "<p>Hello, World! その他の設定ページです</p>"
+    return render_template("mypage-prev.html")
 
+@app.route("/user/main/others-settings/forgetpass")
+@login_required
+def return_user_others_pass():
+    #return "<p>Hello, World! その他の設定ページです</p>"
+    return render_template("pass-forget1.html")
 
-if __name__ == "__main__":
-   app.run()
+#追記
+# アラーム設定用のエンドポイント
+@app.route('/set_alarm', methods=['POST'])
+def set_alarm():
+    global alarm_time, alarm_active
+
+    time_str = request.form['timeInput']
+    alarm_time = datetime.strptime(time_str, "%H:%M").time()
+
+    # 現在の日付とセットした時間を組み合わせて datetime オブジェクトを作成
+    now = datetime.now()
+    alarm_time = datetime.combine(now.date(), alarm_time)
+
+    # アラームをアクティブにする
+    alarm_active = True
+
+    return "アラームが設定されました！"
+
+if __name__ == '__main__':
+    # バックグラウンドでアラームを監視するスレッドを起動
+    alarm_checker = threading.Thread(target=alarm_thread)
+    alarm_checker.start()
+
+    # Flaskアプリケーションを起動
+    app.run(debug=True)

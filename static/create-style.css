@@ -12,7 +12,7 @@ header{
     
     .title{
         margin-right:auto;
-        padding-left:6px;
+        padding: left 10px;
     }
     
     .menu-item{
@@ -21,3 +21,12 @@ header{
         padding:10px
     }
     
+    td {
+        text-align: center;
+        padding: 20px; /* Adjust padding as needed */
+    }
+    
+    .large-button {
+        font-size: 20px; /* Adjust the font size as needed */
+        padding: 10px 20px; /* Adjust padding as needed */
+    }

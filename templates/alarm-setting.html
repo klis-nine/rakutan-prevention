@@ -1,35 +1,49 @@
 <!DOCTYPE html>
-<html lang="ja">
-
+<html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<title>落単回避アプリ</title>
-	<link rel="stylesheet" href="situation-style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alarm Setting</title>
 </head>
-
 <body>
-    <header>
-        <img src="icon.png">
-		<h2 class="title">落単回避！</h2>
-    </header>
+    <h1>アラーム設定</h1>
+    <form id="alarmForm">
+        <label for="timeInput">アラーム時刻を設定してください:</label>
+        <input type="time" id="timeInput" name="timeInput" required>
+        <button type="submit">アラームをセット</button>
+    </form>
+    <script>
+        document.getElementById('alarmForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            fetch('/set_alarm', {
+                method: 'POST',
+                body: formData
+            }).then(response => {
+                if (response.ok) {
+                    alert('アラームが設定されました！');
+                } else {
+                    alert('アラームの設定に失敗しました。');
+                }
+            });
+        });
 
-    <center><h1>アラーム設定</h1></center>
-    <h2>デフォルト設定</h2>
-    時刻設定：
-    <select name="time-set">
-        <option>10分前</option>
-        <option>30分前</option>
-        <option>60分前</option>
-    </select>
-    <br>
-    サウンド：
-    <select name="sound-set">
-        <option>サウンド１</option>
-        <option>サウンド２</option>
-        <option>サウンド３</option>
-    </select>
-    <br>
-    <h2>個別のアラーム設定は<a href="">→履修状況登録</a></h2>
+        function showNotification() {
+            if (Notification.permission === 'granted') {
+                navigator.serviceWorker.getRegistration().then(function(reg) {
+                    reg.showNotification('アラームです！');
+                });
+            }
+        }
+
+        // プッシュ通知の許可をリクエスト
+        if ('Notification' in window && navigator.serviceWorker) {
+            Notification.requestPermission().then(function(permission) {
+                if (permission === 'granted') {
+                    navigator.serviceWorker.register('/sw.js');
+                }
+            });
+        }
+    </script>
 </body>
 </html>
-

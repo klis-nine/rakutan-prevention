@@ -11,6 +11,16 @@ from sqlalchemy import (
 from sqlalchemy.orm import sessionmaker
 from flask_login import UserMixin
 
+#追記
+from datetime import datetime, timedelta
+import threading
+import time
+from playsound import playsound
+import pygame  # pygame をインポート
+
+# グローバル変数としてアラーム関連の情報を初期化
+alarm_time = None
+alarm_active = False
 
 class User(UserMixin):
     def __init__(self, user_id, email, password):
@@ -91,3 +101,28 @@ class DatabaseManager:
             if result:
                 return User(result.user_id, result.email, result.password)
             return None
+
+# アラームの処理を記述する関数
+def alarm_thread():
+    global alarm_time, alarm_active
+
+    def play_alarm_sound():
+        print("再生開始")  # デバッグメッセージ
+        pygame.mixer.music.load('/music/alarm_sound.mp3')  # 音声ファイルのパスを指定
+        pygame.mixer.music.play()
+        while pygame.mixer.music.get_busy():
+            time.sleep(1)
+        print("再生終了")  # デバッグメッセージ
+
+    while True:
+        if alarm_time and datetime.now() >= alarm_time and alarm_active:
+            print("アラームです！")
+            
+             # スレッドを使って音を鳴らす
+            alarm_sound_thread = threading.Thread(target=play_alarm_sound)
+            alarm_sound_thread.start()
+
+            # アラームが鳴った後にフラグをリセットする
+            alarm_active = False
+
+        time.sleep(1)

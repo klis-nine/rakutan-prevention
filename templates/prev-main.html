@@ -3,7 +3,7 @@
     <head>
 	    <meta charset="UTF-8">
 	    <title>落単回避アプリ</title>
-	    <link rel="stylesheet" href="create-style.css">
+	    <link rel="stylesheet" href="static/create-style.css">
     </head>
 
     <body>
@@ -12,17 +12,23 @@
 		    <h2 class="title">落単回避！</h2>
         </header>
 
-        <center><h1>タイトル</h1></center>
-        <center>説明とかを書く場所！いろいろ書く！</center>
+        <center><h1>TsukuAlert</h1></center>
+        <center>筑波大生に向けた授業アラームシステム</center>
+        <center>TsukuAlertを活用して落単を回避しよう！</center>
+        <p></p>
 
         <table>
             <tr>
-                <td><button type="button">履修登録確認</button></td>
-                <td><button type="button">出欠席確認</button</td>>
+                <p>
+                <input type="button" onclick="location.href='/user/main/registration'" value="履修登録確認" class="large-button">
+                <input type="button" onclick="location.href='/user/main/attendence'" value="出欠席確認" class="large-button">
+                </p>
             </tr>
             <tr>
-                <td><button type="button">アラーム設定</button></td>
-                <td><button type="button">その他の設定</button</td>>
+                <p>
+                <input type="button" onclick="location.href='/user/main/alarm_settings'" value="アラーム設定" class="large-button">
+                <input type="button" onclick="location.href='/user/main/others-settings'" value="その他の設定" class="large-button">
+                </p>
             </tr>
         </table>
 
