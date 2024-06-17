@@ -1,2 +1,5 @@
 *.db
 __pycache__
+data.ms
+instance
+*.mp3

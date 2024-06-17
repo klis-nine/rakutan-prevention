@@ -9,6 +9,10 @@ from sqlalchemy import create_engine
 from model import Base, User, Class, ClassRegistration, DatabaseManager
 import dotenv
 from flask_cors import CORS
+import jwt
+from jwt.algorithms import RSAAlgorithm
+import requests
+import json
 
 dotenv.load_dotenv()
 
@@ -55,14 +59,56 @@ def get_token_auth_header():
     return token
 
 
+JWKS_URL = f"https://{AUTH0_DOMAIN}/.well-known/jwks.json"
+JWKS = requests.get(JWKS_URL).json()
+
+
+def get_token_auth_header():
+    auth = request.headers.get("Authorization", None)
+    if not auth:
+        raise Exception("Authorization header is expected")
+
+    parts = auth.split()
+
+    if parts[0].lower() != "bearer":
+        raise Exception("Authorization header must start with Bearer")
+    elif len(parts) == 1:
+        raise Exception("Token not found")
+    elif len(parts) > 2:
+        raise Exception("Authorization header must be Bearer token")
+
+    token = parts[1]
+    return token
+
+
+def get_rsa_key(kid):
+    for key in JWKS["keys"]:
+        if key["kid"] == kid:
+            rsa_key = {
+                "kty": key["kty"],
+                "kid": key["kid"],
+                "use": key["use"],
+                "n": key["n"],
+                "e": key["e"],
+            }
+            print(rsa_key)
+            return RSAAlgorithm.from_jwk(json.dumps(rsa_key))
+    return None
+
+
 def requires_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         token = get_token_auth_header()
+        unverified_header = jwt.get_unverified_header(token)
+        rsa_key = get_rsa_key(unverified_header["kid"])
+        if rsa_key is None:
+            return jsonify({"message": "Unable to find appropriate key"}), 401
+
         try:
             payload = jwt.decode(
                 token,
-                AUTH0_PUBLIC_KEY,
+                rsa_key,
                 algorithms=["RS256"],
                 audience=API_AUDIENCE,
                 issuer=f"https://{AUTH0_DOMAIN}/",
@@ -71,10 +117,11 @@ def requires_auth(f):
             return jsonify({"message": "Token has expired"}), 401
         except jwt.InvalidTokenError:
             return jsonify({"message": "Invalid token"}), 401
-        # もし既存のユーザーでない場合は、新規ユーザーを作成する
+
         if not database_manager.get_account(payload["sub"]):
             print(payload)
             database_manager.add_account(payload["sub"])
+
         return f(payload, *args, **kwargs)
 
     return decorated
@@ -227,11 +274,6 @@ def delete_class(payload, class_id):
 @requires_auth
 def list_class_registrations(payload):
     user_id = payload["sub"]
-    if permissionCheck(user_id, "") == False:
-        return (
-            jsonify({"message": "You are not allowed to view class registrations"}),
-            403,
-        )
     registrations = database_manager.list_user_class(user_id)
     return jsonify(registrations), 200
 
