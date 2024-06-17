@@ -30,6 +30,14 @@ API_AUDIENCE = os.environ["API_AUDIENCE"]
 AUTH0_PUBLIC_KEY = os.environ["AUTH0_PUBLIC_KEY"]
 
 
+# 分離しておく、のほうが管理者権限周りとか作りやすそうなので
+def permissionCheck(request_user_id, user_id):
+    # 管理者でない場合は、自分のアカウントのみ操作可能
+    if request_user_id != user_id and request_user_id != "admin":
+        return False
+    return True
+
+
 def get_token_auth_header():
     auth = request.headers.get("Authorization", None)
     if not auth:
@@ -93,7 +101,7 @@ def create_account(payload):
 @requires_auth
 def get_account(payload, user_id):
     current_user_id = payload["sub"]
-    if current_user_id != user_id:
+    if permissionCheck(current_user_id, user_id) == False:
         return jsonify({"message": "You are not allowed to view this account"}), 403
 
     account = database_manager.get_account(user_id)
@@ -107,7 +115,7 @@ def get_account(payload, user_id):
 @requires_auth
 def update_account(payload, user_id):
     current_user_id = payload["sub"]
-    if current_user_id != user_id:
+    if permissionCheck(current_user_id, user_id) == False:
         return jsonify({"message": "You are not allowed to update this account"}), 403
     account = database_manager.get_account(user_id)
     if not account:
@@ -201,6 +209,9 @@ def update_class(payload, class_id):
 @app.route("/api/classes/<class_id>", methods=["DELETE"])
 @requires_auth
 def delete_class(payload, class_id):
+    current_user_id = payload["sub"]
+    if permissionCheck(current_user_id, "") == False:
+        return jsonify({"message": "You are not allowed to update this class"}), 403
     cls = database_manager.get_class(class_id)
     if not cls:
         return jsonify({"message": "Class not found"}), 404
@@ -216,6 +227,11 @@ def delete_class(payload, class_id):
 @requires_auth
 def list_class_registrations(payload):
     user_id = payload["sub"]
+    if permissionCheck(user_id, "") == False:
+        return (
+            jsonify({"message": "You are not allowed to view class registrations"}),
+            403,
+        )
     registrations = database_manager.list_user_class(user_id)
     return jsonify(registrations), 200
 
@@ -227,7 +243,6 @@ def register_class(payload):
     user_id = payload["sub"]
     class_id = data["class_id"]
     absences = data.get("absences", 0)
-
     success = database_manager.register_user_class(user_id, class_id, absences)
     if success:
         return jsonify({"message": "User registered to class successfully"}), 201
@@ -239,7 +254,7 @@ def register_class(payload):
 @requires_auth
 def update_absences(payload, user_id, class_id):
     current_user_id = payload["sub"]
-    if current_user_id != user_id:
+    if permissionCheck(current_user_id, user_id) == False:
         return (
             jsonify(
                 {"message": "You are not allowed to update absences for this user"}
@@ -263,7 +278,7 @@ def update_absences(payload, user_id, class_id):
 @requires_auth
 def unregister_class(payload, user_id, class_id):
     current_user_id = payload["sub"]
-    if current_user_id != user_id:
+    if permissionCheck(current_user_id, user_id) == False:
         return (
             jsonify(
                 {"message": "You are not allowed to unregister this user from class"}
