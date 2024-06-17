@@ -13,6 +13,7 @@ import jwt
 from jwt.algorithms import RSAAlgorithm
 import requests
 import json
+from notifier import call_number
 
 dotenv.load_dotenv()
 
@@ -333,6 +334,24 @@ def unregister_class(payload, user_id, class_id):
         return jsonify({"message": "User unregistered from class successfully"}), 204
     else:
         return jsonify({"message": "Failed to unregister user from class"}), 500
+
+
+@app.route("/api/callme", methods=["GET"])
+@requires_auth
+def callme(payload):
+    user_id = payload["sub"]
+    account = database_manager.get_account(user_id)
+    phone_number = account["phone_number"]
+    print(phone_number)
+    # Convert the local phone number to phone number with suffix
+    phone_number = "+81" + phone_number[1:]
+    result = call_number(
+        phone_number, "http://storage.googleapis.com/rakutanprev/qecycncrci.mp3"
+    )
+    if result:
+        return jsonify(account), 200
+    else:
+        return jsonify({"message": "Failed to call"}), 500
 
 
 if __name__ == "__main__":
