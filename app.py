@@ -356,7 +356,7 @@ def callme(payload):
 
 @app.route("/api/sendsms", methods=["GET"])
 @requires_auth
-def callme(payload):
+def callmesms(payload):
     user_id = payload["sub"]
     account = database_manager.get_account(user_id)
     phone_number = account["phone_number"]
