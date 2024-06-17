@@ -1,0 +1,86 @@
+version: "3"
+
+services:
+  app:
+    build: .
+    ports:
+      - "5000:5000"
+    container_name: app
+    volumes:
+      - .:/usr/src/app
+    command: flask run --host=0.0.0.0
+    environment:
+      VIRTUAL_HOST: rp-api.raspi0124.dev
+      LETSENCRYPT_HOST: rp-api.raspi0124.dev
+      LETSENCRYPT_EMAIL: raspi0124@gmail.com
+    networks:
+      - rpnet
+    restart: always
+
+  db:
+    container_name: db
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword # Added a placeholder value
+      MYSQL_DATABASE: db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    restart: always
+    networks:
+      - rpnet
+
+  nginx-proxy:
+    image: nginxproxy/nginx-proxy:1.5
+    container_name: nginx-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - certs:/etc/nginx/certs
+      - html:/usr/share/nginx/html
+      - vhost:/etc/nginx/vhost.d
+    restart: always
+    networks:
+      - rpnet
+
+  nginx-proxy-acme:
+    image: nginxproxy/acme-companion:2.2
+    container_name: nginx-proxy-acme
+    volumes_from:
+      - nginx-proxy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - acme:/etc/acme.sh
+    restart: always
+    networks:
+      - rpnet
+
+  meilisearch:
+    container_name: meilisearch
+    image: getmeili/meilisearch:v0.25.2
+    environment:
+      - http_proxy
+      - https_proxy
+      - MEILI_MASTER_KEY=${MEILI_MASTER_KEY:-masterKey}
+      - MEILI_NO_ANALYTICS=${MEILI_NO_ANALYTICS:-true}
+      - MEILI_ENV=${MEILI_ENV:-development}
+      - MEILI_LOG_LEVEL
+      - MEILI_DB_PATH=${MEILI_DB_PATH:-/data.ms}
+    ports:
+      - ${MEILI_PORT:-7700}:7700
+    networks:
+      - rpnet
+    volumes:
+      - ./data.ms:/data.ms
+    restart: unless-stopped
+
+networks:
+  rpnet:
+    driver: bridge
+
+volumes:
+  certs:
+  html:
+  vhost:
+  acme:

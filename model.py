@@ -7,164 +7,220 @@ from sqlalchemy import (
     ForeignKey,
     MetaData,
     select,
-    delete,  # ここにdeleteを追加
+    delete,
+    update,
 )
-from sqlalchemy.orm import sessionmaker
-from flask_login import UserMixin
+from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy.exc import IntegrityError
+import logging
+
+Base = declarative_base()
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
-class User(UserMixin):
-    def __init__(self, user_id, email, password):
-        self.id = user_id  # flask-login requires `id` attribute
+class User(Base):
+    __tablename__ = "accounts"
+    user_id = Column(String(255), primary_key=True)
+    name = Column(String(255))
+    email = Column(String(255), unique=True)
+    phone_number = Column(String(255))
+
+    def to_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+    def __init__(self, user_id, name=None, email=None, phone_number=None):
+        self.user_id = user_id
+        self.name = name
         self.email = email
-        self.password = password
+        self.phone_number = phone_number
+
+
+class Class(Base):
+    __tablename__ = "classes"
+    class_id = Column(String(255), primary_key=True)
+    class_room = Column(String(255))
+    class_name = Column(String(255))
+    class_semester = Column(String(255))
+    class_period = Column(String(255))
+    number_of_classes = Column(Integer)
+
+    def to_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+
+class ClassRegistration(Base):
+    __tablename__ = "class_registrations"
+    user_id = Column(Integer, ForeignKey("accounts.user_id"), primary_key=True)
+    class_id = Column(Integer, ForeignKey("classes.class_id"), primary_key=True)
+    absences = Column(Integer)
+
+    def to_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
 class DatabaseManager:
     def __init__(self, database_url="sqlite:///main.db"):
         self.engine = create_engine(database_url)
-        self.metadata = MetaData()
-
-        self.accounts = Table(
-            "accounts",
-            self.metadata,
-            Column("user_id", Integer, primary_key=True),
-            Column("email", String(255), unique=True),
-            Column("password", String(255)),
-        )
-
-        self.classes = Table(
-            "classes",
-            self.metadata,
-            Column("class_id", Integer, primary_key=True),
-            Column("class_room", String(255)),
-            Column("class_name", String(255)),
-            Column("class_semester", String(255)),
-            Column("class_period", Integer),
-            Column("number_of_classes", Integer),
-        )
-
-        self.class_registration = Table(
-            "class_registrations",
-            self.metadata,
-            Column(
-                "user_id", Integer, ForeignKey("accounts.user_id"), primary_key=True
-            ),
-            Column(
-                "class_id", Integer, ForeignKey("classes.class_id"), primary_key=True
-            ),
-            Column("absences", Integer),
-        )
-
-        self.metadata.create_all(self.engine)
+        Base.metadata.create_all(self.engine)
         self.Session = sessionmaker(bind=self.engine)
 
     def create_tables(self):
-        self.metadata.create_all(self.engine)
+        Base.metadata.create_all(self.engine)
 
     def get_session(self):
         return self.Session()
 
     def select_all_accounts(self):
         with self.get_session() as session:
-            query = select(self.accounts)
-            result = session.execute(query).fetchall()
-            return result
+            query = select(User)
+            result = session.execute(query).scalars().all()
+            return [user.to_dict() for user in result]
 
-    def add_class(self, class_id, class_room, class_name, class_semester, class_period, number_of_classes):
-        try:
-            with self.get_session() as session:
-                insert_stmt = self.classes.insert().values(
+    def add_class(
+        self,
+        class_id,
+        class_room,
+        class_name,
+        class_semester,
+        class_period,
+        number_of_classes,
+    ):
+        with self.get_session() as session:
+            try:
+                new_class = Class(
                     class_id=class_id,
                     class_room=class_room,
                     class_name=class_name,
                     class_semester=class_semester,
                     class_period=class_period,
-                    number_of_classes=number_of_classes
+                    number_of_classes=number_of_classes,
                 )
-                session.execute(insert_stmt)
+                session.add(new_class)
                 session.commit()
-            return True
-        except Exception as e:
-            print(f"Error adding class: {e}")
-            return False
+                return True
+            except Exception as e:
+                session.rollback()
+                logger.error(f"Error adding class: {e}")
+                return False
 
     def get_class(self, class_id):
         with self.get_session() as session:
-            query = select(self.classes).where(self.classes.c.class_id == class_id)
-            result = session.execute(query).fetchone()
-            if result:
-                return dict(result)
-            else:
-                return None
+            result = session.get(Class, class_id)
+            return result.to_dict() if result else None
 
     def list_class(self, search_words):
         with self.get_session() as session:
+            query = select(Class)
             if search_words:
-                query = select(self.classes).where(
-                    (self.classes.c.class_name.like(f"%{search_words}%")) |
-                    (self.classes.c.class_room.like(f"%{search_words}%")) |
-                    (self.classes.c.class_semester.like(f"%{search_words}%"))
+                query = query.where(
+                    (Class.class_name.like(f"%{search_words}%"))
+                    | (Class.class_room.like(f"%{search_words}%"))
+                    | (Class.class_semester.like(f"%{search_words}%"))
                 )
-            else:
-                query = select(self.classes)
-            
-            result = session.execute(query).fetchall()
-            return [dict(row) for row in result]
-    def add_account(self, email, hashed_password):
-        with self.get_session() as session:
-            query = self.accounts.insert().values(email=email, password=hashed_password)
-            session.execute(query)
-            session.commit()
+            result = session.execute(query).scalars().all()
+            return [cls.to_dict() for cls in result]
 
-    def get_account(self, email):
+    def add_account(self, user_id, name=None, email=None, phone_number=None):
         with self.get_session() as session:
-            query = select(self.accounts).where(self.accounts.c.email == email)
-            result = session.execute(query).fetchone()
-            if result:
-                return User(result.user_id, result.email, result.password)
-            return None
+            try:
+                new_user = User(
+                    user_id=user_id,
+                    name=name,
+                    email=email,
+                    phone_number=phone_number,
+                )
+                session.add(new_user)
+                session.commit()
+                return True
+            except IntegrityError as e:
+                session.rollback()
+                logger.error(f"Error adding account: {e}")
+                return False
 
-# 例えば:
-# db_manager = DatabaseManager()
-# db_manager.create_tables()
-# accounts = db_manager.select_all_accounts()
+    def get_account(self, user_id):
+        with self.get_session() as session:
+            result = session.get(User, user_id)
+            print(result)
+            return result.to_dict() if result else None
 
     def register_user_class(self, user_id, class_id, absences=0):
         with self.get_session() as session:
-            session.execute(
-                self.class_registration.insert().values(
+            try:
+                result = session.get(
+                    ClassRegistration, {"user_id": user_id, "class_id": class_id}
+                )
+                if result:
+                    logger.info("User is already registered for this class.")
+                    return False
+                new_registration = ClassRegistration(
                     user_id=user_id, class_id=class_id, absences=absences
                 )
-            )
-            session.commit()
+                session.add(new_registration)
+                session.commit()
+                return True
+            except Exception as e:
+                session.rollback()
+                logger.error(f"Error registering user to class: {e}")
+                return False
+
+    def update_user_absences(self, user_id, class_id, absences):
+        with self.get_session() as session:
+            try:
+                query = (
+                    update(ClassRegistration)
+                    .where(
+                        (ClassRegistration.user_id == user_id)
+                        & (ClassRegistration.class_id == class_id)
+                    )
+                    .values(absences=absences)
+                )
+                session.execute(query)
+                session.commit()
+                return True
+            except Exception as e:
+                session.rollback()
+                logger.error(f"Error updating user absences: {e}")
+                return False
 
     def remove_user_class(self, user_id, class_id):
         with self.get_session() as session:
-            session.execute(
-                delete(self.class_registration).where(
-                    (self.class_registration.c.user_id == user_id) &
-                    (self.class_registration.c.class_id == class_id)
+            try:
+                query = delete(ClassRegistration).where(
+                    (ClassRegistration.user_id == user_id)
+                    & (ClassRegistration.class_id == class_id)
                 )
-            )
-            session.commit()
+                session.execute(query)
+                session.commit()
+                return True
+            except Exception as e:
+                session.rollback()
+                logger.error(f"Error removing user from class: {e}")
+                return False
 
     def list_user_class(self, user_id):
         with self.get_session() as session:
-            query = select(self.class_registration).where(
-                self.class_registration.c.user_id == user_id
+            query = select(ClassRegistration).where(
+                ClassRegistration.user_id == user_id
             )
-            result = session.execute(query).fetchall()
-            return result
-        
-#実装確認     
-# インスタンスを作成してからメソッドを呼び出す
-#db_manager = DatabaseManager()
-#db_manager.register_user_class(user_id=1, class_id=101)
+            result = session.execute(query).scalars().all()
+            return [registration.to_dict() for registration in result]
+
     def get_account_by_id(self, user_id):
         with self.get_session() as session:
-            query = select(self.accounts).where(self.accounts.c.user_id == user_id)
-            result = session.execute(query).fetchone()
-            if result:
-                return User(result.user_id, result.email, result.password)
-            return None
+            result = session.get(User, user_id)
+            return result if result else None
+
+    def get_class_by_semester_and_period(self, semester, period):
+        # Semester format on database: "SA,SB"
+        # Period format on database: "1,2"
+        # Look for classes that includes the semester and period
+        with self.get_session() as session:
+            query = select(Class).where(
+                (Class.class_semester.like(f"%{semester}%"))
+                & (Class.class_period.like(f"%{period}%"))
+            )
+            result = session.execute(query).scalars().all()
+            return [cls.to_dict() for cls in result]

@@ -1,0 +1,7 @@
+sqlalchemy
+flask-sqlalchemy
+flask-cors
+python-dotenv
+PyJWT
+google-cloud-texttospeech
+cryptography
