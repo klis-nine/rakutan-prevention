@@ -124,3 +124,31 @@ def main():
         absences = cls["absences"]
         remaining_min = 10
         notify("google-oauth2|105038472575077144999", class_id, absences, remaining_min)
+
+
+def send_sms(phone_number, message):
+    # curl -u o7a0cfpSNZmOWC1Dzj2qV9E4sUdx8MKT:p56fvwxb84iam9urskh2go7et01cjd3z --data-urlencode 'recipient=+8190123456789' --data-urlencode 'sender=Xoxzo1' --data-urlencode 'message=こんにちは' https://api.xoxzo.com/sms/messages/
+    username = "o7a0cfpSNZmOWC1Dzj2qV9E4sUdx8MKT"
+    password = "p56fvwxb84iam9urskh2go7et01cjd3z"
+
+    api_url = "https://api.xoxzo.com/sms/messages/"
+
+    payload = {
+        "recipient": phone_number,
+        "sender": "klis-nine",
+        "message": message,
+    }
+
+    # Make the POST request
+    response = requests.post(
+        api_url, data=payload, auth=HTTPBasicAuth(username, password)
+    )
+
+    # Check and return the response
+    if response.status_code == 200 or response.status_code == 201:
+        return True
+    else:
+        print(
+            f"Request failed with status code {response.status_code}, Response: {response.content.decode()}"
+        )
+        return False

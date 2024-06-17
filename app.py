@@ -13,7 +13,7 @@ import jwt
 from jwt.algorithms import RSAAlgorithm
 import requests
 import json
-from notifier import call_number
+from notifier import call_number, send_sms
 
 dotenv.load_dotenv()
 
@@ -348,6 +348,23 @@ def callme(payload):
     result = call_number(
         phone_number, "http://storage.googleapis.com/rakutanprev/qecycncrci.mp3"
     )
+    if result:
+        return jsonify(account), 200
+    else:
+        return jsonify({"message": "Failed to call"}), 500
+
+
+@app.route("/api/sendsms", methods=["GET"])
+@requires_auth
+def callme(payload):
+    user_id = payload["sub"]
+    account = database_manager.get_account(user_id)
+    phone_number = account["phone_number"]
+    print(phone_number)
+    # Convert the local phone number to phone number with suffix
+    phone_number = "+81" + phone_number[1:]
+    result = send_sms(phone_number, "電話番号が登録されました!")
+
     if result:
         return jsonify(account), 200
     else:
