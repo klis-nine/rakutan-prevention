@@ -1,0 +1,85 @@
+header{
+    display:flex;
+    width:100%;
+    height:60px;
+    background: color #daeae5;
+    align-items:center;
+    }
+    
+    body{
+        margin:0;
+    }
+
+    a{
+        font-weight:bold;
+        text-decoration:none;
+    }
+
+    a:link{
+        color: #000;
+    }
+
+    a:hover{
+        color:#ff8052;
+    }
+    
+    .title{
+        margin-right:auto;
+        padding-left:6px;
+        font-size:25px;
+        font-weight:bold;
+        color:#165B6A;
+    }
+
+    .underbar{
+        position:relative;
+        top:27px;
+    }
+    
+    .menu-item{
+        list-style:none;
+        display:inline-block;
+        padding:10px;
+    }
+    
+    .form-name{
+        position:relative;
+        top: 40px;
+        left: 130px;
+    }
+
+    .form-move{
+        position:relative;
+        top: 25px;
+    }
+
+    .for-button{
+        position:relative;
+        top: 60px;
+        padding: 13px 50px;
+        background: #ff8052;
+        color:#ffffff;
+        font-weight:bold;
+        border-radius: 10px;
+        border:none;
+    }
+
+    .page-title{
+        position:relative;
+        top: 25px;
+        font-size: 30px;
+    }
+
+    .square{
+        background: #e5e5e5;
+        margin:auto;
+        width: 500px;
+        height: 280px;
+        border-radius: 30px;
+        background-position:center;
+    }
+
+    .pass-forget{
+        position:relative;
+        top: 30px
+    }
