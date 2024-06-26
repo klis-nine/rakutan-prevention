@@ -82,8 +82,8 @@ def generate_voice_message(class_name, absences, remaining_min):
 
 
 def call_number(phonenumber, url):
-    username = "o7a0cfpSNZmOWC1Dzj2qV9E4sUdx8MKT"
-    password = "p56fvwxb84iam9urskh2go7et01cjd3z"
+    username = ""
+    password = ""
 
     api_url = "https://api.xoxzo.com/voice/simple/playbacks/"
 
@@ -127,9 +127,8 @@ def main():
 
 
 def send_sms(phone_number, message):
-    # curl -u o7a0cfpSNZmOWC1Dzj2qV9E4sUdx8MKT:p56fvwxb84iam9urskh2go7et01cjd3z --data-urlencode 'recipient=+8190123456789' --data-urlencode 'sender=Xoxzo1' --data-urlencode 'message=こんにちは' https://api.xoxzo.com/sms/messages/
-    username = "o7a0cfpSNZmOWC1Dzj2qV9E4sUdx8MKT"
-    password = "p56fvwxb84iam9urskh2go7et01cjd3z"
+    username = ""
+    password = ""
 
     api_url = "https://api.xoxzo.com/sms/messages/"
 
